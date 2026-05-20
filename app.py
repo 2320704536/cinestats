@@ -23,133 +23,419 @@ BASE_URL = "https://api.themoviedb.org/3"
 # ─────────────────────────────────────────────
 st.markdown("""
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+    :root {
+        --bg-main: #071019;
+        --bg-deep: #0b1621;
+        --bg-panel: rgba(16, 29, 43, 0.82);
+        --bg-panel-strong: rgba(18, 34, 50, 0.92);
+        --bg-soft: rgba(255, 255, 255, 0.035);
+        --line-soft: rgba(143, 183, 209, 0.16);
+        --line-gold: rgba(199, 165, 106, 0.34);
+        --text-main: #f2eee6;
+        --text-soft: #aab6c4;
+        --text-faint: rgba(170, 182, 196, 0.68);
+        --gold: #c7a56a;
+        --gold-deep: #8f7650;
+        --silver: #8fb7d1;
+        --silver-bright: #c9dceb;
+        --shadow-deep: 0 28px 80px rgba(0, 0, 0, 0.42);
+        --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.28);
+        --radius-xl: 30px;
+        --radius-lg: 22px;
+        --radius-md: 16px;
+        --radius-sm: 12px;
+    }
+
+    html, body, [class*="css"] {
+        font-family: "Manrope", sans-serif;
+    }
+
     .stApp {
+        color: var(--text-main);
         background:
-            radial-gradient(circle at top left, rgba(212, 175, 55, 0.18), transparent 32%),
-            radial-gradient(circle at top right, rgba(80, 120, 180, 0.16), transparent 30%),
-            linear-gradient(135deg, #07111f 0%, #0b1628 45%, #111827 100%);
-        color: #f8f3e8;
+            radial-gradient(circle at 12% 8%, rgba(143, 183, 209, 0.10), transparent 24%),
+            radial-gradient(circle at 84% 14%, rgba(199, 165, 106, 0.10), transparent 20%),
+            radial-gradient(circle at 50% 100%, rgba(95, 131, 160, 0.08), transparent 28%),
+            linear-gradient(145deg, #04070b 0%, #071019 38%, #0a1520 68%, #0d1b2a 100%);
+        background-attachment: fixed;
     }
+
     .block-container {
-        padding-top: 2rem;
-        padding-bottom: 3rem;
-        max-width: 1250px;
+        max-width: 1240px;
+        padding-top: 2.2rem;
+        padding-bottom: 3.2rem;
     }
+
     section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #06101f 0%, #0d1b2f 100%);
-        border-right: 1px solid rgba(212, 175, 55, 0.25);
-    }
-    section[data-testid="stSidebar"] * { color: #f8f3e8; }
-    .hero {
         background:
-            linear-gradient(135deg, rgba(212, 175, 55, 0.18), rgba(255,255,255,0.04)),
-            linear-gradient(120deg, #0b1628, #16213e);
-        border: 1px solid rgba(212, 175, 55, 0.35);
-        border-radius: 28px;
-        padding: 2.4rem 2.2rem;
-        box-shadow: 0 24px 60px rgba(0,0,0,0.35);
-        margin-bottom: 1.5rem;
+            linear-gradient(180deg, rgba(8, 15, 24, 0.98) 0%, rgba(12, 23, 36, 0.98) 100%);
+        border-right: 1px solid var(--line-soft);
+        box-shadow: inset -1px 0 0 rgba(199, 165, 106, 0.08);
+    }
+
+    section[data-testid="stSidebar"] * {
+        color: var(--text-main);
+    }
+
+    section[data-testid="stSidebar"] .stMarkdown p,
+    section[data-testid="stSidebar"] label,
+    section[data-testid="stSidebar"] span {
+        color: var(--text-soft);
+    }
+
+    .hero {
         position: relative;
         overflow: hidden;
+        padding: 2.8rem 2.5rem 2.6rem 2.5rem;
+        margin-bottom: 1.7rem;
+        border-radius: var(--radius-xl);
+        border: 1px solid rgba(143, 183, 209, 0.18);
+        background:
+            linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015)),
+            linear-gradient(120deg, rgba(10, 19, 30, 0.92), rgba(14, 29, 44, 0.88) 58%, rgba(18, 38, 56, 0.92));
+        box-shadow: var(--shadow-deep);
+        backdrop-filter: blur(10px);
     }
+
+    .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+            linear-gradient(90deg, rgba(199,165,106,0.10), transparent 28%),
+            linear-gradient(180deg, transparent, rgba(143,183,209,0.08));
+        pointer-events: none;
+    }
+
     .hero::after {
         content: "";
         position: absolute;
-        width: 260px; height: 260px;
-        right: -80px; top: -90px;
-        background: radial-gradient(circle, rgba(212,175,55,0.25), transparent 68%);
+        width: 340px;
+        height: 340px;
+        right: -110px;
+        top: -120px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(201,220,235,0.10), rgba(143,183,209,0.04) 36%, transparent 68%);
+        filter: blur(8px);
+        pointer-events: none;
     }
+
     .festival-label {
-        display: inline-block;
-        letter-spacing: 2px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        margin-bottom: 0.8rem;
+        color: var(--gold);
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.22em;
         text-transform: uppercase;
-        font-size: 0.78rem;
-        font-weight: 700;
-        color: #d4af37;
-        margin-bottom: 0.5rem;
     }
+
+    .festival-label::before {
+        content: "";
+        width: 38px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--gold));
+    }
+
     .hero-title {
-        font-size: 3.2rem;
-        font-weight: 900;
-        line-height: 1.05;
-        color: #ffffff;
-        margin-bottom: 0.6rem;
-    }
-    .hero-subtitle {
-        font-size: 1.05rem;
-        color: rgba(248,243,232,0.82);
-        max-width: 760px;
-    }
-    .section-title {
-        font-size: 1.45rem;
-        font-weight: 800;
-        color: #ffffff;
-        margin-top: 1.4rem;
-        margin-bottom: 0.9rem;
-        border-left: 5px solid #d4af37;
-        padding-left: 0.8rem;
-    }
-    .section-caption {
-        color: rgba(248,243,232,0.72);
-        margin-bottom: 1rem;
-    }
-    button[data-baseweb="tab"] {
-        background: rgba(255,255,255,0.04);
-        border-radius: 999px;
-        margin-right: 0.4rem;
-        padding: 0.6rem 1rem;
-        border: 1px solid rgba(212,175,55,0.18);
-    }
-    button[data-baseweb="tab"] p { color: #f8f3e8; font-weight: 700; }
-    button[data-baseweb="tab"][aria-selected="true"] {
-        background: linear-gradient(135deg, #d4af37, #b88917);
-    }
-    button[data-baseweb="tab"][aria-selected="true"] p { color: #07111f; }
-    div[data-testid="stMetric"] {
-        background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
-        border: 1px solid rgba(212,175,55,0.24);
-        border-radius: 20px;
-        padding: 1.15rem;
-        box-shadow: 0 16px 35px rgba(0,0,0,0.23);
-    }
-    div[data-testid="stMetricLabel"] { color: rgba(248,243,232,0.72); }
-    div[data-testid="stMetricValue"] { color: #ffffff; font-weight: 900; }
-    div[data-testid="stExpander"] {
-        background: rgba(255,255,255,0.055);
-        border: 1px solid rgba(212,175,55,0.20);
-        border-radius: 18px;
+        font-family: "Cormorant Garamond", serif;
+        font-size: 4rem;
+        line-height: 0.95;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        color: var(--text-main);
         margin-bottom: 0.75rem;
-        box-shadow: 0 12px 28px rgba(0,0,0,0.22);
+        text-shadow: 0 6px 30px rgba(0, 0, 0, 0.22);
     }
-    div[data-testid="stExpander"] summary { font-weight: 800; color: #ffffff; }
-    .stButton > button, .stDownloadButton > button {
-        border-radius: 999px;
-        border: 1px solid rgba(212,175,55,0.35);
-        background: linear-gradient(135deg, #d4af37, #b88917);
-        color: #07111f;
-        font-weight: 800;
-        transition: all 0.2s ease;
+
+    .hero-subtitle {
+        max-width: 760px;
+        font-size: 1rem;
+        line-height: 1.8;
+        color: var(--text-soft);
+        letter-spacing: 0.01em;
     }
-    .stButton > button:hover, .stDownloadButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 25px rgba(212,175,55,0.28);
-        color: #07111f;
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        margin-top: 1.5rem;
+        margin-bottom: 0.55rem;
+        color: var(--text-main);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 2rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
     }
-    .stTextInput input, .stNumberInput input, .stTextArea textarea {
-        border-radius: 14px;
-        border: 1px solid rgba(212,175,55,0.18);
+
+    .section-title::before {
+        content: "";
+        width: 44px;
+        height: 1px;
+        background: linear-gradient(90deg, var(--gold), rgba(143,183,209,0.28));
+        flex-shrink: 0;
     }
-    .stAlert { border-radius: 16px; }
-    .gold-text { color: #d4af37; font-weight: 800; }
+
+    .section-caption {
+        margin-bottom: 1rem;
+        color: var(--text-faint);
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
+
     hr {
         border: none;
         height: 1px;
-        background: rgba(212,175,55,0.18);
-        margin: 1.5rem 0;
+        margin: 1.6rem 0;
+        background: linear-gradient(90deg, transparent, rgba(199,165,106,0.34), rgba(143,183,209,0.24), transparent);
+    }
+
+    button[data-baseweb="tab"] {
+        min-height: 48px;
+        padding: 0.55rem 1.05rem;
+        margin-right: 0.55rem;
+        border-radius: 999px;
+        border: 1px solid rgba(143, 183, 209, 0.14);
+        background: rgba(255, 255, 255, 0.025);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+        transition: all 0.22s ease;
+    }
+
+    button[data-baseweb="tab"] p {
+        color: var(--text-soft);
+        font-weight: 700;
+        letter-spacing: 0.01em;
+    }
+
+    button[data-baseweb="tab"]:hover {
+        border-color: rgba(199, 165, 106, 0.25);
+        background: rgba(255,255,255,0.045);
+        transform: translateY(-1px);
+    }
+
+    button[data-baseweb="tab"][aria-selected="true"] {
+        border: 1px solid rgba(199, 165, 106, 0.34);
+        background:
+            linear-gradient(135deg, rgba(199,165,106,0.18), rgba(143,183,209,0.08)),
+            rgba(255,255,255,0.04);
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.06),
+            0 10px 26px rgba(0,0,0,0.18);
+    }
+
+    button[data-baseweb="tab"][aria-selected="true"] p {
+        color: var(--text-main);
+    }
+
+    div[data-testid="stMetric"] {
+        padding: 1.15rem 1.15rem 1rem 1.15rem;
+        border-radius: var(--radius-lg);
+        border: 1px solid rgba(143, 183, 209, 0.14);
+        background:
+            linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+            var(--bg-panel);
+        box-shadow: var(--shadow-soft);
+        backdrop-filter: blur(8px);
+    }
+
+    div[data-testid="stMetricLabel"] {
+        color: var(--text-faint);
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    div[data-testid="stMetricValue"] {
+        color: var(--text-main);
+        font-family: "Cormorant Garamond", serif;
+        font-size: 2.2rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+    }
+
+    div[data-testid="stMetricDelta"] {
+        color: var(--silver) !important;
+    }
+
+    div[data-testid="stExpander"] {
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(143, 183, 209, 0.12);
+        background:
+            linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.018)),
+            rgba(13, 25, 38, 0.72);
+        box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+        overflow: hidden;
+    }
+
+    div[data-testid="stExpander"] summary {
+        color: var(--text-main);
+        font-weight: 800;
+        padding-top: 0.1rem;
+        padding-bottom: 0.1rem;
+    }
+
+    .stButton > button,
+    .stDownloadButton > button {
+        min-height: 46px;
+        padding: 0.65rem 1.15rem;
+        border-radius: 999px;
+        border: 1px solid rgba(199, 165, 106, 0.34);
+        background:
+            linear-gradient(135deg, rgba(199,165,106,0.20), rgba(143,183,209,0.08)),
+            rgba(255,255,255,0.04);
+        color: var(--text-main);
+        font-weight: 800;
+        letter-spacing: 0.01em;
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.05),
+            0 12px 30px rgba(0,0,0,0.2);
+        transition: all 0.22s ease;
+    }
+
+    .stButton > button:hover,
+    .stDownloadButton > button:hover {
+        transform: translateY(-2px);
+        border-color: rgba(199, 165, 106, 0.52);
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.07),
+            0 18px 34px rgba(0,0,0,0.24);
+        color: #ffffff;
+    }
+
+    .stTextInput input,
+    .stNumberInput input,
+    .stTextArea textarea,
+    div[data-baseweb="select"] > div,
+    div[data-baseweb="base-input"] {
+        border-radius: 14px !important;
+        border: 1px solid rgba(143, 183, 209, 0.14) !important;
+        background: rgba(10, 19, 29, 0.82) !important;
+        color: var(--text-main) !important;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+
+    .stTextInput input:focus,
+    .stNumberInput input:focus,
+    .stTextArea textarea:focus {
+        border-color: rgba(199, 165, 106, 0.34) !important;
+        box-shadow: 0 0 0 1px rgba(199, 165, 106, 0.18) !important;
+    }
+
+    label,
+    .stSlider label,
+    .stMultiSelect label,
+    .stSelectbox label {
+        color: var(--text-soft) !important;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+    }
+
+    .stSlider [data-baseweb="slider"] > div > div {
+        background: linear-gradient(90deg, var(--gold), var(--silver)) !important;
+    }
+
+    .stSlider [role="slider"] {
+        background: var(--silver-bright) !important;
+        border: 2px solid var(--bg-main) !important;
+        box-shadow: 0 0 0 4px rgba(143,183,209,0.12);
+    }
+
+    .stDataFrame,
+    div[data-testid="stTable"] {
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid rgba(143, 183, 209, 0.12);
+        box-shadow: var(--shadow-soft);
+    }
+
+    div[data-testid="stDataFrame"] div[role="table"] {
+        background: rgba(10, 19, 29, 0.72);
+    }
+
+    div[data-testid="stDataFrame"] [role="columnheader"] {
+        background: rgba(199, 165, 106, 0.10);
+        color: var(--text-main);
+        font-weight: 800;
+        border-bottom: 1px solid rgba(199, 165, 106, 0.12);
+    }
+
+    div[data-testid="stDataFrame"] [role="gridcell"] {
+        color: var(--text-soft);
+        border-bottom: 1px solid rgba(143, 183, 209, 0.06);
+    }
+
+    .stCaption,
+    .stMarkdown p,
+    .stMarkdown li {
+        color: var(--text-soft);
+    }
+
+    .stAlert {
+        border-radius: 16px;
+        border: 1px solid rgba(143, 183, 209, 0.16);
+        background: rgba(11, 21, 32, 0.78);
+        color: var(--text-main);
+    }
+
+    .gold-text {
+        color: var(--gold);
+        font-weight: 800;
+        letter-spacing: 0.01em;
+    }
+
+    .stPlotlyChart {
+        border-radius: 22px;
+        padding: 0.4rem;
+        background:
+            linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015)),
+            rgba(9, 17, 26, 0.52);
+        border: 1px solid rgba(143, 183, 209, 0.10);
+        box-shadow: var(--shadow-soft);
+    }
+
+    [data-testid="stImage"] img {
+        border-radius: 14px;
+        border: 1px solid rgba(143, 183, 209, 0.12);
+        box-shadow: 0 14px 28px rgba(0,0,0,0.25);
+    }
+
+    .st-emotion-cache-1kyxreq,
+    .st-emotion-cache-ocqkz7 {
+        gap: 1rem;
+    }
+
+    @media (max-width: 900px) {
+        .block-container {
+            padding-top: 1.4rem;
+            padding-bottom: 2.2rem;
+        }
+
+        .hero {
+            padding: 2rem 1.4rem 1.9rem 1.4rem;
+            border-radius: 24px;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+        }
+
+        .hero-subtitle {
+            font-size: 0.96rem;
+            line-height: 1.7;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+        }
     }
 </style>
 """, unsafe_allow_html=True)
-
 # ─────────────────────────────────────────────
 # Header
 # ─────────────────────────────────────────────
