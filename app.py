@@ -3,11 +3,7 @@ import plotly.express as px
 import requests
 import streamlit as st
 
-st.set_page_config(
-    page_title="CineStats — Film Festival Analytics",
-    page_icon="🎬",
-    layout="wide",
-)
+
 
 BASE_URL = "https://api.themoviedb.org/3"
 IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w200"
