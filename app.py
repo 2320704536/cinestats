@@ -1,117 +1,100 @@
-
-    csv_dir = df_dir.drop(columns=["Photo"]).to_csv(index=False).encode("utf-8")
-    st.download_button(
-        "Export Director Data as CSV",
-        csv_dir,
-        "cinestats_directors.csv",
-        "text/csv",
-    )
+import pandas as pd
+import plotly.express as px
+import requests
+import streamlit as st
 
 
-with tab3:
-    st.markdown('<div class="section-title">Popular Titles</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="section-caption">A living shortlist of titles currently drawing the widest audience attention.</div>',
-        unsafe_allow_html=True,
-    )
-
-    f1, f2 = st.columns(2)
-    with f1:
-        genre_options = ["All"] + sorted(df_popular["Genre"].unique())
-        genre_sel = st.selectbox("Filter by Category", genre_options)
-    with f2:
-        min_rating = st.slider("Minimum Rating", 0.0, 10.0, 5.0, 0.1)
-
-    df_p = df_popular.copy()
-    if genre_sel != "All":
-        df_p = df_p[df_p["Genre"] == genre_sel]
-    df_p = df_p[df_p["Rating"] >= min_rating]
-    df_p = df_p.sort_values("Popularity", ascending=False).reset_index(drop=True)
-
-    st.caption(f"Showing {len(df_p)} popular movies.")
-
-    for _, row in df_p.head(20).iterrows():
-        render_movie_card(row, "🎬")
-
-
-with tab4:
-    st.markdown('<div class="section-title">Top Rated Canon</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="section-caption">A sortable view into the highest-rated films surfaced from TMDb.</div>',
-        unsafe_allow_html=True,
-    )
-
-    tr1, tr2 = st.columns(2)
-    with tr1:
-        year_options = ["All"] + sorted(df_top["Release Year"].unique(), reverse=True)
-        year_sel = st.selectbox("Filter by Year", year_options)
-    with tr2:
-        genre_options_top = ["All"] + sorted(df_top["Genre"].unique())
-        genre_sel_top = st.selectbox("Filter by Genre", genre_options_top, key="top_genre")
-
-    df_t = df_top.copy()
-    if year_sel != "All":
-        df_t = df_t[df_t["Release Year"] == year_sel]
-    if genre_sel_top != "All":
-        df_t = df_t[df_t["Genre"] == genre_sel_top]
-    df_t = df_t.sort_values("Rating", ascending=False).reset_index(drop=True)
-
-    st.caption(f"Showing {len(df_t)} top-rated movies.")
-
-    st.markdown("### Table View")
-    st.dataframe(
-        df_t[["Title", "Release Year", "Genre", "All Genres", "Rating", "Votes", "Popularity"]],
-        use_container_width=True,
-        height=350,
-    )
-    st.caption(f"{len(df_t)} movies in this view")
-
-    st.markdown("---")
-
-    for _, row in df_t.head(20).iterrows():
-        render_movie_card(row, "🏆")
-
-
-with tab5:
-    st.markdown('<div class="section-title">Search Archive</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="section-caption">Search a film title and review its poster, rating, votes, and synopsis.</div>',
-        unsafe_allow_html=True,
-    )
-
-    query = st.text_input(
-        "Enter a movie title",
-        placeholder="e.g. Inception, Parasite, La La Land...",
-    )
-
-    if query:
-        with st.spinner("Searching the archive..."):
-            results = search_movies(query)
-
-        if results:
-            df_s = build_df(results, genre_map)
-            st.success(f"Found {len(df_s)} results for '{query}'")
-
-            st.markdown("### Search Results Table")
-            st.dataframe(
-                df_s[["Title", "Release Year", "Genre", "Rating", "Votes"]],
-                use_container_width=True,
-                height=300,
-            )
-            st.markdown("---")
-
-            for _, row in df_s.head(10).iterrows():
-                render_movie_card(row, "🎬")
-        else:
-            st.warning("No results found. Try another movie title.")
-
-
-st.markdown("---")
-csv = df_top.to_csv(index=False).encode("utf-8")
-st.download_button(
-    "Export Top Rated Movies as CSV",
-    csv,
-    "cinestats_top_rated.csv",
-    "text/csv",
-    use_container_width=True,
+st.set_page_config(
+    page_title="CineStats — Film Festival Analytics",
+    page_icon="🎬",
+    layout="wide",
 )
+
+
+API_KEY = st.secrets.get("TMDB_API_KEY")
+BASE_URL = "https://api.themoviedb.org/3"
+POSTER_BASE_URL = "https://image.tmdb.org/t/p/w200"
+REQUEST_TIMEOUT = 20
+
+
+if not API_KEY:
+    st.error("TMDb API key is missing. Add `TMDB_API_KEY` to your Streamlit secrets.")
+    st.stop()
+
+
+st.markdown(
+    """
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+    :root {
+        --bg-main: #071019;
+        --bg-deep: #0b1621;
+        --bg-panel: rgba(16, 29, 43, 0.82);
+        --bg-panel-strong: rgba(18, 34, 50, 0.92);
+        --bg-soft: rgba(255, 255, 255, 0.035);
+        --line-soft: rgba(143, 183, 209, 0.16);
+        --line-gold: rgba(199, 165, 106, 0.34);
+        --text-main: #f2eee6;
+        --text-soft: #aab6c4;
+        --text-faint: rgba(170, 182, 196, 0.68);
+        --gold: #c7a56a;
+        --gold-deep: #8f7650;
+        --silver: #8fb7d1;
+        --silver-bright: #c9dceb;
+        --shadow-deep: 0 28px 80px rgba(0, 0, 0, 0.42);
+        --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.28);
+        --radius-xl: 30px;
+        --radius-lg: 22px;
+        --radius-md: 16px;
+        --radius-sm: 12px;
+    }
+
+    html, body, [class*="css"] {
+        font-family: "Manrope", sans-serif;
+    }
+
+    .stApp {
+        color: var(--text-main);
+        background:
+            radial-gradient(circle at 12% 8%, rgba(143, 183, 209, 0.10), transparent 24%),
+            radial-gradient(circle at 84% 14%, rgba(199, 165, 106, 0.10), transparent 20%),
+            radial-gradient(circle at 50% 100%, rgba(95, 131, 160, 0.08), transparent 28%),
+            linear-gradient(145deg, #04070b 0%, #071019 38%, #0a1520 68%, #0d1b2a 100%);
+        background-attachment: fixed;
+    }
+
+    .block-container {
+        max-width: 1240px;
+        padding-top: 2.2rem;
+        padding-bottom: 3.2rem;
+    }
+
+    section[data-testid="stSidebar"] {
+        background:
+            linear-gradient(180deg, rgba(8, 15, 24, 0.98) 0%, rgba(12, 23, 36, 0.98) 100%);
+        border-right: 1px solid var(--line-soft);
+        box-shadow: inset -1px 0 0 rgba(199, 165, 106, 0.08);
+    }
+
+    section[data-testid="stSidebar"] * {
+        color: var(--text-main);
+    }
+
+    section[data-testid="stSidebar"] .stMarkdown p,
+    section[data-testid="stSidebar"] label,
+    section[data-testid="stSidebar"] span {
+        color: var(--text-soft);
+    }
+
+    .hero {
+        position: relative;
+        overflow: hidden;
+        padding: 2.8rem 2.5rem 2.6rem 2.5rem;
+        margin-bottom: 1.7rem;
+        border-radius: var(--radius-xl);
+        border: 1px solid rgba(143, 183, 209, 0.18);
+        background:
+            linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015)),
+            linear-gradient(120deg, rgba(10, 19, 30, 0.92), rgba(14, 29, 44, 0.88) 58%, rgba(18, 38, 56, 0.92));
+        box-shadow: var(--shadow-deep);
