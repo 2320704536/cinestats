@@ -21,341 +21,186 @@ API_KEY = st.secrets["TMDB_API_KEY"]
 
 APP_CSS = '''
 <style>
-    @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap");
+    @import url("https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap");
 
     :root {
-        --bg-main: #071019;
-        --bg-deep: #0b1621;
-        --bg-panel: rgba(16, 29, 43, 0.82);
-        --text-main: #f2eee6;
-        --text-soft: #aab6c4;
-        --text-faint: rgba(170, 182, 196, 0.68);
-        --gold: #c7a56a;
-        --silver: #8fb7d1;
-        --silver-bright: #c9dceb;
-        --line-soft: rgba(143, 183, 209, 0.16);
-        --shadow-deep: 0 28px 80px rgba(0, 0, 0, 0.42);
-        --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.28);
+        --bg: #0a0a0a;
+        --bg-soft: #111111;
+        --bg-card: rgba(255, 248, 232, 0.045);
+        --cream: #f4ead7;
+        --cream-soft: rgba(244, 234, 215, 0.72);
+        --cream-faint: rgba(244, 234, 215, 0.44);
+        --line: rgba(244, 234, 215, 0.18);
+        --line-strong: rgba(244, 234, 215, 0.55);
+        --red: #ff3b30;
+        --amber: #d8a23a;
+        --blue: #8eb4d9;
+        --shadow: 0 26px 80px rgba(0,0,0,0.52);
     }
 
-    html, body, [class*="css"] {
-        font-family: "Manrope", sans-serif;
-    }
+    html, body, [class*="css"] { font-family: "Inter", sans-serif; }
 
     .stApp {
-        color: var(--text-main);
+        color: var(--cream);
         background:
-            radial-gradient(circle at 12% 8%, rgba(143, 183, 209, 0.10), transparent 24%),
-            radial-gradient(circle at 84% 14%, rgba(199, 165, 106, 0.10), transparent 20%),
-            radial-gradient(circle at 50% 100%, rgba(95, 131, 160, 0.08), transparent 28%),
-            linear-gradient(145deg, #04070b 0%, #071019 38%, #0a1520 68%, #0d1b2a 100%);
+            radial-gradient(circle at 12% 4%, rgba(216,162,58,0.11), transparent 25%),
+            radial-gradient(circle at 86% 10%, rgba(142,180,217,0.10), transparent 26%),
+            linear-gradient(180deg, #080808 0%, #0b0b0b 45%, #111111 100%);
         background-attachment: fixed;
     }
 
-    .block-container {
-        max-width: 1240px;
-        padding-top: 2.2rem;
-        padding-bottom: 3.2rem;
+    .stApp::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.08;
+        background-image:
+            linear-gradient(rgba(244,234,215,0.28) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(244,234,215,0.20) 1px, transparent 1px);
+        background-size: 72px 72px;
+        mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent 85%);
+        z-index: 0;
     }
 
-    section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, rgba(8, 15, 24, 0.98) 0%, rgba(12, 23, 36, 0.98) 100%);
-        border-right: 1px solid var(--line-soft);
-        box-shadow: inset -1px 0 0 rgba(199, 165, 106, 0.08);
+    .block-container { max-width: 1220px; padding-top: 2rem; padding-bottom: 3.6rem; position: relative; z-index: 1; }
+
+    section[data-testid="stSidebar"] { background: #080808; border-right: 1px solid var(--line); box-shadow: inset -1px 0 0 rgba(216,162,58,0.12); }
+    section[data-testid="stSidebar"] * { color: var(--cream) !important; }
+
+    .top-strip {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.2rem;
+        padding: 0.8rem 0;
+        border-top: 1px solid var(--line-strong);
+        border-bottom: 1px solid var(--line-strong);
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.78rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--cream-soft);
     }
 
-    section[data-testid="stSidebar"] * {
-        color: var(--text-main);
-    }
+    .rec-dot { display: inline-block; width: 9px; height: 9px; margin-right: 8px; border-radius: 50%; background: var(--red); box-shadow: 0 0 18px rgba(255,59,48,0.9); vertical-align: middle; }
 
     .hero {
         position: relative;
         overflow: hidden;
-        padding: 2.8rem 2.5rem 2.6rem 2.5rem;
-        margin-bottom: 1.7rem;
-        border-radius: 30px;
-        border: 1px solid rgba(143, 183, 209, 0.18);
-        background:
-            linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015)),
-            linear-gradient(120deg, rgba(10, 19, 30, 0.92), rgba(14, 29, 44, 0.88) 58%, rgba(18, 38, 56, 0.92));
-        box-shadow: var(--shadow-deep);
-        backdrop-filter: blur(10px);
+        margin-bottom: 2rem;
+        padding: clamp(2rem, 5vw, 4rem);
+        border: 1px solid var(--line-strong);
+        background: linear-gradient(135deg, rgba(244,234,215,0.055), rgba(244,234,215,0.015)), linear-gradient(180deg, rgba(18,18,18,0.96), rgba(8,8,8,0.94));
+        box-shadow: var(--shadow);
     }
 
     .hero::before {
-        content: "";
+        content: "35mm";
         position: absolute;
-        inset: 0;
-        background:
-            linear-gradient(90deg, rgba(199,165,106,0.10), transparent 28%),
-            linear-gradient(180deg, transparent, rgba(143,183,209,0.08));
-        pointer-events: none;
+        top: 1.25rem;
+        right: 1.35rem;
+        color: rgba(244,234,215,0.18);
+        font-family: "Archivo Black", sans-serif;
+        font-size: clamp(4rem, 13vw, 10rem);
+        line-height: 1;
+        letter-spacing: -0.08em;
+        z-index: 0;
     }
 
-    .hero::after {
-        content: "";
-        position: absolute;
-        width: 340px;
-        height: 340px;
-        right: -110px;
-        top: -120px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(201,220,235,0.10), rgba(143,183,209,0.04) 36%, transparent 68%);
-        filter: blur(8px);
-        pointer-events: none;
-    }
+    .hero::after { content: ""; position: absolute; inset: 14px; border: 1px solid rgba(244,234,215,0.12); pointer-events: none; }
+    .hero-content { position: relative; z-index: 1; max-width: 980px; }
 
-    .festival-label {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.55rem;
-        margin-bottom: 0.8rem;
-        color: var(--gold);
-        font-size: 0.76rem;
-        font-weight: 800;
-        letter-spacing: 0.22em;
-        text-transform: uppercase;
-    }
+    .scene-kicker { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.15rem; font-family: "IBM Plex Mono", monospace; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--cream-soft); }
+    .scene-kicker::before { content: ""; width: 48px; height: 1px; background: var(--cream); }
 
-    .festival-label::before {
-        content: "";
-        width: 38px;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, var(--gold));
-    }
+    .hero-title { margin: 0; max-width: 900px; color: var(--cream); font-family: "Archivo Black", sans-serif; font-size: clamp(4.4rem, 13vw, 9.6rem); line-height: 0.82; letter-spacing: -0.09em; text-transform: uppercase; }
+    .hero-subtitle { margin-top: 1.4rem; max-width: 760px; color: var(--cream-soft); font-size: 1.02rem; line-height: 1.85; }
 
-    .hero-title {
-        font-family: "Cormorant Garamond", serif;
-        font-size: 4rem;
-        line-height: 0.95;
-        font-weight: 700;
-        letter-spacing: 0.01em;
-        color: var(--text-main);
-        margin-bottom: 0.75rem;
-        text-shadow: 0 6px 30px rgba(0, 0, 0, 0.22);
-    }
+    .slate-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 2rem; border: 1px solid var(--line); background: rgba(0,0,0,0.22); }
+    .slate-cell { min-height: 74px; padding: 0.85rem 1rem; border-right: 1px solid var(--line); font-family: "IBM Plex Mono", monospace; }
+    .slate-cell:last-child { border-right: 0; }
+    .slate-label { display: block; margin-bottom: 0.35rem; color: var(--cream-faint); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; }
+    .slate-value { color: var(--cream); font-size: 0.9rem; font-weight: 700; }
 
-    .hero-subtitle {
-        max-width: 760px;
-        font-size: 1rem;
-        line-height: 1.8;
-        color: var(--text-soft);
-        letter-spacing: 0.01em;
-    }
+    .section-title { display: flex; align-items: center; gap: 0.9rem; margin-top: 1.8rem; margin-bottom: 0.8rem; color: var(--cream); font-family: "Archivo Black", sans-serif; font-size: clamp(1.7rem, 3.4vw, 3rem); line-height: 0.95; letter-spacing: -0.055em; text-transform: uppercase; }
+    .section-title::before { content: "SCENE"; padding: 0.35rem 0.55rem; border: 1px solid var(--line-strong); color: var(--cream-soft); font-family: "IBM Plex Mono", monospace; font-size: 0.68rem; letter-spacing: 0.14em; }
+    .section-caption { margin-bottom: 1.2rem; max-width: 780px; color: var(--cream-faint); font-size: 0.95rem; line-height: 1.7; font-family: "IBM Plex Mono", monospace; }
 
-    .section-title {
-        display: flex;
-        align-items: center;
-        gap: 0.85rem;
-        margin-top: 1.5rem;
-        margin-bottom: 0.55rem;
-        color: var(--text-main);
-        font-family: "Cormorant Garamond", serif;
-        font-size: 2rem;
-        font-weight: 600;
-        letter-spacing: 0.02em;
-    }
+    hr { border: none; height: 1px; margin: 1.7rem 0; background: linear-gradient(90deg, transparent, var(--line-strong), transparent); }
 
-    .section-title::before {
-        content: "";
-        width: 44px;
-        height: 1px;
-        background: linear-gradient(90deg, var(--gold), rgba(143,183,209,0.28));
-        flex-shrink: 0;
-    }
+    button[data-baseweb="tab"] { min-height: 48px; margin-right: 0.45rem; padding: 0.55rem 1rem; border-radius: 0; border: 1px solid var(--line); background: rgba(244,234,215,0.025); transition: all 0.18s ease; }
+    button[data-baseweb="tab"] p { color: var(--cream-soft); font-family: "IBM Plex Mono", monospace; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+    button[data-baseweb="tab"]:hover { border-color: var(--line-strong); background: rgba(244,234,215,0.065); }
+    button[data-baseweb="tab"][aria-selected="true"] { border-color: var(--cream); background: var(--cream); }
+    button[data-baseweb="tab"][aria-selected="true"] p { color: #0a0a0a; }
 
-    .section-caption {
-        margin-bottom: 1rem;
-        color: var(--text-faint);
-        font-size: 0.95rem;
-        line-height: 1.7;
-    }
+    div[data-testid="stMetric"] { padding: 1.1rem 1.1rem 1rem; border: 1px solid var(--line); border-radius: 0; background: rgba(244,234,215,0.045); box-shadow: 0 18px 50px rgba(0,0,0,0.28); }
+    div[data-testid="stMetricLabel"] { color: var(--cream-faint); font-family: "IBM Plex Mono", monospace; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+    div[data-testid="stMetricValue"] { color: var(--cream); font-family: "Archivo Black", sans-serif; font-size: 2.05rem; letter-spacing: -0.04em; }
 
-    hr {
-        border: none;
-        height: 1px;
-        margin: 1.6rem 0;
-        background: linear-gradient(90deg, transparent, rgba(199,165,106,0.34), rgba(143,183,209,0.24), transparent);
-    }
+    .stPlotlyChart { border: 1px solid var(--line); border-radius: 0; padding: 0.5rem; background: rgba(244,234,215,0.035); box-shadow: 0 18px 50px rgba(0,0,0,0.30); }
+    div[data-testid="stExpander"] { border: 1px solid var(--line); border-radius: 0; background: rgba(244,234,215,0.04); overflow: hidden; }
+    div[data-testid="stExpander"] summary { color: var(--cream) !important; font-family: "IBM Plex Mono", monospace; font-weight: 700; }
 
-    button[data-baseweb="tab"] {
-        min-height: 48px;
-        padding: 0.55rem 1.05rem;
-        margin-right: 0.55rem;
-        border-radius: 999px;
-        border: 1px solid rgba(143, 183, 209, 0.14);
-        background: rgba(255, 255, 255, 0.025);
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
-        transition: all 0.22s ease;
-    }
+    .stButton > button, .stDownloadButton > button { min-height: 46px; padding: 0.72rem 1.2rem; border-radius: 0; border: 1px solid var(--cream); background: transparent; color: var(--cream); font-family: "IBM Plex Mono", monospace; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; transition: all 0.18s ease; }
+    .stButton > button:hover, .stDownloadButton > button:hover { background: var(--cream); color: #0a0a0a; border-color: var(--cream); }
 
-    button[data-baseweb="tab"] p {
-        color: var(--text-soft);
-        font-weight: 700;
-        letter-spacing: 0.01em;
-    }
-
-    button[data-baseweb="tab"]:hover {
-        border-color: rgba(199, 165, 106, 0.25);
-        background: rgba(255,255,255,0.045);
-        transform: translateY(-1px);
-    }
-
-    button[data-baseweb="tab"][aria-selected="true"] {
-        border: 1px solid rgba(199, 165, 106, 0.34);
-        background:
-            linear-gradient(135deg, rgba(199,165,106,0.18), rgba(143,183,209,0.08)),
-            rgba(255,255,255,0.04);
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 10px 26px rgba(0,0,0,0.18);
-    }
-
-    button[data-baseweb="tab"][aria-selected="true"] p {
-        color: var(--text-main);
-    }
-
-    div[data-testid="stMetric"] {
-        padding: 1.15rem 1.15rem 1rem 1.15rem;
-        border-radius: 22px;
-        border: 1px solid rgba(143, 183, 209, 0.14);
-        background:
-            linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
-            var(--bg-panel);
-        box-shadow: var(--shadow-soft);
-        backdrop-filter: blur(8px);
-    }
-
-    div[data-testid="stMetricLabel"] {
-        color: var(--text-faint);
-        font-size: 0.8rem;
-        font-weight: 700;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-    }
-
-    div[data-testid="stMetricValue"] {
-        color: var(--text-main);
-        font-family: "Cormorant Garamond", serif;
-        font-size: 2.2rem;
-        font-weight: 700;
-        letter-spacing: 0.02em;
-    }
-
-    div[data-testid="stExpander"] {
-        border-radius: 16px;
-        border: 1px solid rgba(143, 183, 209, 0.12);
-        background:
-            linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.018)),
-            rgba(13, 25, 38, 0.72);
-        box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
-        overflow: hidden;
-    }
-
-    div[data-testid="stExpander"] summary {
-        color: var(--text-main);
-        font-weight: 800;
-    }
-
-    .stButton > button, .stDownloadButton > button {
-        min-height: 46px;
-        padding: 0.65rem 1.15rem;
-        border-radius: 999px;
-        border: 1px solid rgba(199, 165, 106, 0.34);
-        background:
-            linear-gradient(135deg, rgba(199,165,106,0.20), rgba(143,183,209,0.08)),
-            rgba(255,255,255,0.04);
-        color: var(--text-main);
-        font-weight: 800;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 12px 30px rgba(0,0,0,0.2);
-        transition: all 0.22s ease;
-    }
-
-    .stButton > button:hover, .stDownloadButton > button:hover {
-        transform: translateY(-2px);
-        border-color: rgba(199, 165, 106, 0.52);
-        color: #ffffff;
-    }
-
-    .stTextInput input,
-    .stNumberInput input,
-    .stTextArea textarea,
-    div[data-baseweb="select"] > div,
-    div[data-baseweb="base-input"] {
-        border-radius: 14px !important;
-        border: 1px solid rgba(143, 183, 209, 0.14) !important;
-        background: rgba(10, 19, 29, 0.82) !important;
-        color: var(--text-main) !important;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
-    }
-
-    .stDataFrame, div[data-testid="stTable"] {
-        border-radius: 18px;
-        overflow: hidden;
-        border: 1px solid rgba(143, 183, 209, 0.12);
-        box-shadow: var(--shadow-soft);
-    }
-
-    .stAlert {
-        border-radius: 16px;
-        border: 1px solid rgba(143, 183, 209, 0.16);
-        background: rgba(11, 21, 32, 0.78);
-        color: var(--text-main);
-    }
-
-    .gold-text {
-        color: var(--gold);
-        font-weight: 800;
-    }
-
-    .stPlotlyChart {
-        border-radius: 22px;
-        padding: 0.4rem;
-        background:
-            linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015)),
-            rgba(9, 17, 26, 0.52);
-        border: 1px solid rgba(143, 183, 209, 0.10);
-        box-shadow: var(--shadow-soft);
-    }
-
-    [data-testid="stImage"] img {
-        border-radius: 14px;
-        border: 1px solid rgba(143, 183, 209, 0.12);
-        box-shadow: 0 14px 28px rgba(0,0,0,0.25);
-    }
+    .stTextInput input, .stNumberInput input, .stTextArea textarea, div[data-baseweb="select"] > div, div[data-baseweb="base-input"] { border-radius: 0 !important; border: 1px solid var(--line) !important; background: rgba(8,8,8,0.88) !important; color: var(--cream) !important; font-family: "IBM Plex Mono", monospace !important; }
+    .stDataFrame, div[data-testid="stTable"] { border: 1px solid var(--line); border-radius: 0; overflow: hidden; box-shadow: 0 18px 50px rgba(0,0,0,0.28); }
+    .stAlert { border-radius: 0; border: 1px solid var(--line); background: rgba(244,234,215,0.055); color: var(--cream); }
+    [data-testid="stImage"] img { border-radius: 0; border: 1px solid var(--line); filter: saturate(0.92) contrast(1.04); box-shadow: 0 18px 50px rgba(0,0,0,0.32); }
+    .gold-text { color: var(--amber); font-weight: 800; }
+    h1, h2, h3 { color: var(--cream) !important; letter-spacing: -0.035em; }
+    p, span, label, div { color: inherit; }
 
     @media (max-width: 900px) {
-        .block-container {
-            padding-top: 1.4rem;
-            padding-bottom: 2.2rem;
-        }
-
-        .hero {
-            padding: 2rem 1.4rem 1.9rem 1.4rem;
-            border-radius: 24px;
-        }
-
-        .hero-title {
-            font-size: 3rem;
-        }
-
-        .hero-subtitle {
-            font-size: 0.96rem;
-            line-height: 1.7;
-        }
-
-        .section-title {
-            font-size: 1.6rem;
-        }
+        .block-container { padding-top: 1.2rem; }
+        .top-strip { flex-direction: column; align-items: flex-start; gap: 0.45rem; }
+        .hero { padding: 2rem 1.25rem; }
+        .hero-title { font-size: 4.2rem; }
+        .slate-grid { grid-template-columns: 1fr 1fr; }
+        .slate-cell:nth-child(2) { border-right: 0; }
+        .slate-cell:nth-child(1), .slate-cell:nth-child(2) { border-bottom: 1px solid var(--line); }
     }
 </style>
 '''
 
 HERO_HTML = '''
+<div class="top-strip">
+    <div><span class="rec-dot"></span>REC 00:00:00:00</div>
+    <div>35mm · ASA 400 · 24fps</div>
+    <div>ARTS & BIG DATA · SKKU</div>
+</div>
+
 <div class="hero">
-    <div class="festival-label">Curated Film Intelligence</div>
-    <div class="hero-title">CineStats</div>
-    <div class="hero-subtitle">
-        A cinematic analytics salon for exploring popular releases, canonical films,
-        standout directors, audience response, and category trends through live TMDb data.
+    <div class="hero-content">
+        <div class="scene-kicker">SCENE 01 · INT. DATA THEATER · NIGHT</div>
+        <div class="hero-title">CINE<br>STATS</div>
+        <div class="hero-subtitle">
+            A film-data dashboard designed like a cinematic research archive — exploring popular releases,
+            top-rated films, directors, ratings, genres, popularity, and audience response through live TMDb data.
+        </div>
+
+        <div class="slate-grid">
+            <div class="slate-cell">
+                <span class="slate-label">Director</span>
+                <span class="slate-value">Wang Xinru</span>
+            </div>
+            <div class="slate-cell">
+                <span class="slate-label">Production</span>
+                <span class="slate-value">CineStats</span>
+            </div>
+            <div class="slate-cell">
+                <span class="slate-label">Format</span>
+                <span class="slate-value">Film / Data / Design</span>
+            </div>
+            <div class="slate-cell">
+                <span class="slate-label">Year</span>
+                <span class="slate-value">2026</span>
+            </div>
+        </div>
     </div>
 </div>
 '''
@@ -457,8 +302,8 @@ def build_director_data(movie_ids):
     return director_stats
 
 
-CHART_COLORS = ["#c7a56a", "#8fb7d1", "#6b8194", "#d9c4a0", "#5a6a78", "#b2cadc"]
-CONTINUOUS_SCALE = [(0.0, "#213241"), (0.45, "#5d7588"), (1.0, "#c7a56a")]
+CHART_COLORS = ["#f4ead7", "#d8a23a", "#8eb4d9", "#9a7b37", "#b9aa91", "#6d8aa6"]
+CONTINUOUS_SCALE = [(0.0, "#1a1a1a"), (0.45, "#8eb4d9"), (1.0, "#d8a23a")]
 
 
 def curated_chart(fig):
@@ -466,27 +311,27 @@ def curated_chart(fig):
         template="plotly_dark",
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color="#f2eee6", family="Manrope, sans-serif"),
-        title=dict(font=dict(size=20, color="#f2eee6"), x=0.0),
+        font=dict(color="#f4ead7", family="Inter, sans-serif"),
+        title=dict(font=dict(size=20, color="#f4ead7"), x=0.0),
         margin=dict(l=20, r=20, t=40, b=20),
         legend_title_text="",
         colorway=CHART_COLORS,
     )
     fig.update_xaxes(
         showgrid=True,
-        gridcolor="rgba(143, 183, 209, 0.12)",
+        gridcolor="rgba(244, 234, 215, 0.13)",
         zeroline=False,
         showline=False,
-        tickfont=dict(color="#aab6c4"),
-        title_font=dict(color="#c9dceb"),
+        tickfont=dict(color="rgba(244,234,215,0.72)"),
+        title_font=dict(color="#f4ead7"),
     )
     fig.update_yaxes(
         showgrid=True,
-        gridcolor="rgba(143, 183, 209, 0.08)",
+        gridcolor="rgba(244, 234, 215, 0.10)",
         zeroline=False,
         showline=False,
-        tickfont=dict(color="#aab6c4"),
-        title_font=dict(color="#c9dceb"),
+        tickfont=dict(color="rgba(244,234,215,0.72)"),
+        title_font=dict(color="#f4ead7"),
     )
     return fig
 
@@ -521,11 +366,11 @@ df_popular = build_df(popular, genre_map)
 df_top = build_df(top_rated, genre_map)
 
 tab1, tab2, tab3, tab4, tab5 = st.tabs(
-    ["Overview", "Director Ledger", "Popular Titles", "Top Rated", "Search Archive"]
+    ["Scene 01 · Overview", "Scene 02 · Directors", "Scene 03 · Popular", "Scene 04 · Canon", "Scene 05 · Search"]
 )
 
 with tab1:
-    st.markdown('<div class="section-title">Analytics Overview</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Dailies · Analytics Overview</div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="section-caption">A curated view of audience ratings, popularity, release eras, and category composition.</div>',
         unsafe_allow_html=True,
@@ -651,7 +496,7 @@ with tab1:
     st.download_button("Export Table as CSV", csv_all, "cinestats_movies.csv", "text/csv")
 
 with tab2:
-    st.markdown('<div class="section-title">Director Ledger</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Cast & Crew · Director Ledger</div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="section-caption">A focused study of directors represented in the top-rated selection.</div>',
         unsafe_allow_html=True,
@@ -781,7 +626,7 @@ with tab2:
     st.download_button("Export Director Data as CSV", csv_dir, "cinestats_directors.csv", "text/csv")
 
 with tab3:
-    st.markdown('<div class="section-title">Popular Titles</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Box Office Pulse · Popular Titles</div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="section-caption">A living shortlist of titles currently drawing the widest audience attention.</div>',
         unsafe_allow_html=True,
@@ -806,7 +651,7 @@ with tab3:
         render_movie_card(row, "🎬")
 
 with tab4:
-    st.markdown('<div class="section-title">Top Rated Canon</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Festival Canon · Top Rated</div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="section-caption">A sortable view into the highest-rated films surfaced from TMDb.</div>',
         unsafe_allow_html=True,
@@ -843,7 +688,7 @@ with tab4:
         render_movie_card(row, "🏆")
 
 with tab5:
-    st.markdown('<div class="section-title">Search Archive</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Archive Search · Movie Lookup</div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="section-caption">Search a film title and review its poster, rating, votes, and synopsis.</div>',
         unsafe_allow_html=True,
