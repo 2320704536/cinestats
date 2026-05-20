@@ -457,25 +457,6 @@ HERO_HTML = """
             A film-data dashboard designed like a cinematic research archive — exploring popular releases,
             top-rated films, directors, ratings, genres, popularity, and audience response through live TMDb data.
         </div>
-
-        <div class="slate-grid">
-            <div class="slate-cell">
-                <span class="slate-label">Director</span>
-                <span class="slate-value">Wang Xinru</span>
-            </div>
-            <div class="slate-cell">
-                <span class="slate-label">Production</span>
-                <span class="slate-value">CineStats</span>
-            </div>
-            <div class="slate-cell">
-                <span class="slate-label">Format</span>
-                <span class="slate-value">Film / Data / Design</span>
-            </div>
-            <div class="slate-cell">
-                <span class="slate-label">Year</span>
-                <span class="slate-value">2026</span>
-            </div>
-        </div>
     </div>
 </div>
 """
