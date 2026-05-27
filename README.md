@@ -1,6 +1,6 @@
 # 🎬 CineStats — Film Festival Analytics
 
-**CineStats** is a real-time film data analytics dashboard built with **Streamlit**, **Plotly**, **Pandas**, and the **TMDb API**.
+**CineStats** is a real-time film data analytics dashboard built with **Streamlit**, **Pandas**, **Plotly Express**, and the **TMDb API**.
 
 Created by **WANG XINRU**  
 For **Arts and Big Data**  
@@ -10,60 +10,127 @@ Sungkyunkwan University | 2026 Spring
 
 ## 📌 Project Overview
 
-**CineStats** is an interactive web application that explores film data through a cinematic-style dashboard.
+**CineStats — Film Festival Analytics** is an interactive movie data dashboard designed with a cinematic visual style.
 
-The project uses real-time movie data from **The Movie Database (TMDb)** API and transforms it into visual insights, including movie ratings, popularity, genre distribution, release year trends, director performance, and search results.
+The project uses real-time data from **The Movie Database (TMDb) API** to explore popular movies, top-rated films, directors, ratings, genres, popularity, vote counts, release years, and box office revenue. The app presents film data through interactive charts, tables, filters, movie cards, and director analysis.
 
-Instead of presenting movie information only as plain text or lists, CineStats uses charts, filters, tables, posters, and movie cards to help users understand patterns behind films and audience preferences.
+The visual design of the app is inspired by a film archive and festival screening interface. It uses a dark cinematic layout, 35mm film references, scene-style section titles, poster images, and interactive visualizations to connect film culture with data analysis.
 
 ---
 
 ## ✨ Main Features
 
-### 📊 Analytics Overview
+### Scene 01 · Overview
 
-- Displays key movie statistics
-- Shows genre/category distribution
-- Visualizes top-rated films
-- Analyzes movie release year trends
-- Compares ratings and popularity through scatter plots
-- Provides an interactive full movie data table
+The first section provides a general analytics overview of movie data.
 
-### 🎬 Director Analysis
+It includes:
 
-- Analyzes directors from top-rated movie data
-- Shows top directors by average rating
-- Displays directors by number of films
-- Compares director rating and total revenue
-- Includes director detail search
-- Supports director data export as CSV
+- Total number of popular movies loaded
+- Total number of top-rated titles loaded
+- Number of movie categories from TMDb
+- Average rating of top-rated movies
+- Category distribution pie chart
+- Top 10 rated films bar chart
+- Movies by release year line chart
+- Average rating by category bar chart
+- Rating vs popularity scatter plot
+- Full movie data table with filters
+- CSV export for filtered movie data
 
-### 🔥 Popular Movies
+Users can filter the movie table by:
 
-- Displays currently popular films from TMDb
-- Supports genre/category filtering
-- Supports minimum rating filtering
-- Shows movie posters, ratings, popularity, votes, and overviews
+- Genre
+- Release year
+- Minimum rating
 
-### 🏆 Top Rated Movies
+---
 
-- Displays top-rated films from TMDb
-- Supports filtering by year and genre
-- Provides both table view and detailed movie cards
+### Scene 02 · Directors
 
-### 🔍 Movie Search
+The second section focuses on director analysis based on the top-rated movie dataset.
 
-- Allows users to search movie titles in real time
-- Shows search results in table format
-- Displays detailed movie cards with poster, rating, votes, genre, and overview
+It includes:
 
-### 📤 CSV Export
+- Number of directors analyzed
+- Highest average director rating
+- Most prolific director in the dataset
+- Top 15 directors by average rating
+- Directors by number of films
+- Rating vs total revenue scatter plot
+- Director data table
+- Director detail search
+- Director profile photo display when available
+- CSV export for director data
 
-Users can download:
+Users can filter director data by:
 
-- Filtered movie data
-- Director data
-- Top-rated movie data
+- Minimum average rating
+- Minimum movie count
+
+---
+
+### Scene 03 · Popular
+
+The third section displays currently popular movies from TMDb.
+
+It includes:
+
+- Popular movie list
+- Genre/category filter
+- Minimum rating filter
+- Movie poster display
+- Movie rating
+- Popularity score
+- Vote count
+- Movie overview
+
+Each movie is shown as an expandable movie card.
+
+---
+
+### Scene 04 · Canon
+
+The fourth section displays top-rated films from TMDb.
+
+It includes:
+
+- Top-rated movie table
+- Movie cards for selected top-rated films
+- Poster images
+- Ratings
+- Vote counts
+- Popularity scores
+- Movie descriptions
+
+Users can filter top-rated films by:
+
+- Release year
+- Genre
+
+---
+
+### Scene 05 · Search
+
+The fifth section allows users to search for any movie title in real time.
+
+It includes:
+
+- Movie title search bar
+- Real-time TMDb search results
+- Search results table
+- Detailed movie cards
+- Poster images
+- Genre information
+- Ratings
+- Vote counts
+- Movie overviews
+
+Example searches include:
+
+- Inception
+- Parasite
+- La La Land
 
 ---
 
@@ -72,11 +139,11 @@ Users can download:
 | Tool | Purpose |
 |---|---|
 | **Python** | Main programming language |
-| **Streamlit** | Web application framework |
+| **Streamlit** | Web app framework and interface |
 | **Pandas** | Data cleaning and table processing |
-| **Plotly Express** | Interactive data visualization |
-| **Requests** | API data fetching |
-| **TMDb API** | Real-time movie data source |
+| **Plotly Express** | Interactive charts and data visualization |
+| **Requests** | Fetching data from the TMDb API |
+| **TMDb API** | Real-time movie, genre, director, rating, and revenue data |
 
 ---
 
@@ -84,22 +151,43 @@ Users can download:
 
 This project uses data from **The Movie Database (TMDb) API**.
 
-The app retrieves movie and director information in real time, including:
+The app fetches data live during each session. It does not rely on a static dataset.
+
+The app retrieves:
 
 | Data Type | Description |
 |---|---|
-| Movie Title | Film name |
+| Movie ID | TMDb movie identification number |
+| Movie Title | Film title |
 | Release Year | Year of release |
 | Rating | TMDb user rating |
 | Vote Count | Number of user votes |
 | Popularity | TMDb popularity score |
-| Genre | Movie category information |
+| Genre | Main genre and full genre list |
 | Overview | Short movie description |
 | Poster | Movie poster image |
-| Director | Director name and filmography |
-| Revenue | Box office revenue data |
+| Director | Director name from movie credits |
+| Director Photo | Director profile image when available |
+| Revenue | Box office revenue data when available |
 
-No static dataset is used. Data is fetched live during each app session.
+---
+
+## 🎨 Visual Design
+
+CineStats uses a custom cinematic interface created with CSS inside Streamlit.
+
+The design includes:
+
+- Dark film-theater background
+- 35mm film reference
+- Scene-style section titles
+- Cream, amber, red, and blue-toned visual palette
+- Film archive style layout
+- Poster-based movie cards
+- Interactive Plotly charts
+- Responsive layout for different screen sizes
+
+The visual style is designed to make the dashboard feel more like a film festival archive than a traditional data table.
 
 ---
 
@@ -120,9 +208,25 @@ pip install -r requirements.txt
 
 ### 3. Add TMDb API Key
 
-This app requires a TMDb API key.
+This project requires a TMDb API key.
 
-Create a `.streamlit/secrets.toml` file in your project folder:
+Create a folder named `.streamlit` in your project directory.
+
+Inside that folder, create a file named `secrets.toml`.
+
+The structure should look like this:
+
+```txt
+CineStats/
+│
+├── app.py
+├── requirements.txt
+├── README.md
+└── .streamlit/
+    └── secrets.toml
+```
+
+In `secrets.toml`, add:
 
 ```toml
 TMDB_API_KEY = "your_tmdb_api_key_here"
@@ -140,7 +244,7 @@ Then open the local URL shown in the terminal.
 
 ## 📦 Requirements
 
-Create a `requirements.txt` file with:
+Create a `requirements.txt` file with the following libraries:
 
 ```txt
 streamlit
@@ -175,22 +279,37 @@ CineStats/
 
 This project was created for the **Arts and Big Data** course.
 
-The main purpose of CineStats is to show how data analysis and visualization can be applied to film and media studies. By combining real-time movie data with interactive charts, the app helps users explore the relationship between ratings, popularity, genres, release years, and director performance.
+The purpose of CineStats is to show how data analysis can be used to study film and media culture. By using live movie data from TMDb, the app helps users explore how films are rated, how popular they are, which genres appear most often, how release years are distributed, and how directors perform within the selected dataset.
 
-Through this project, I wanted to demonstrate that data is not only useful in business or science, but can also support creative fields such as cinema. CineStats connects film culture, audience response, and visual storytelling through a digital data dashboard.
+Through this project, I wanted to combine film studies with data visualization. CineStats demonstrates that data is not only useful for business or science, but can also help us understand creative industries, audience preferences, and cultural trends in cinema.
 
 ---
 
 ## 💡 What I Learned
 
-Through building this project, I learned how to:
+Through this project, I learned how to:
 
-- Use APIs to collect real-time data
+- Build an interactive web app with Streamlit
+- Fetch real-time data from an external API
+- Use Streamlit secrets to protect API keys
 - Clean and organize movie data with Pandas
-- Create interactive visualizations with Plotly
-- Build a web app using Streamlit
-- Design a dashboard with both functional and visual elements
-- Connect film studies with data analysis
+- Create interactive charts with Plotly Express
+- Design data tables with filters and sorting
+- Build movie cards with posters and expandable details
+- Analyze directors using credits and revenue data
+- Export filtered data as CSV files
+- Combine visual design with data storytelling
+
+---
+
+## ⚠️ Notes
+
+This app requires a valid TMDb API key.  
+If the API key is missing, the app will stop and show an error message.
+
+The movie data may change over time because the app fetches live data from TMDb.
+
+Director and revenue information may be unavailable for some movies depending on the data provided by TMDb.
 
 ---
 
@@ -213,4 +332,4 @@ This project was created as a final project for the **Arts and Big Data** course
 
 ## 🎬 Final Note
 
-**CineStats — Film Festival Analytics** is a project that connects film, data, and visual storytelling.
+**CineStats — Film Festival Analytics** connects film, data, and visual storytelling through an interactive movie analytics dashboard.
